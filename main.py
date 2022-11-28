@@ -78,7 +78,9 @@ for file_name in os.listdir(in_dir):
         page = doc[0]
 
         for r in areas:
-            page.draw_rect(r, fill=(0, 0, 0), width=0)
+            page.add_redact_annot(r, fill=(0, 0, 0))
+        
+        page.apply_redactions()
 
         # Transaction Px
         tx_x0 = table_x0
@@ -98,16 +100,11 @@ for file_name in os.listdir(in_dir):
                 areas.append((tx_x0, tx_y0, tx_x1, tx_y1))
                 
             for r in areas:
-                page.draw_rect(r, fill=(0, 0, 0), width=0)
+                page.add_redact_annot(r, fill=(0, 0, 0))
+            
+            page.apply_redactions()
 
         # Delete last page
         doc.delete_page(number_of_pages-1)
 
-        # Save
-        out_doc = fitz.Document()
-        for page in doc:
-            out_page = out_doc.new_page(width=page.rect.width, height=page.rect.height)
-            img = page.get_pixmap(dpi=400)
-            out_page.insert_image(page.rect, pixmap=img)
-        
-        out_doc.save(out_path)
+        doc.save(out_path)
